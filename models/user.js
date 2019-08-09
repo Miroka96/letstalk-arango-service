@@ -5,11 +5,15 @@ const joi = require('joi');
 module.exports = {
   schema: {
     // Describe the attributes with joi here
-    _key: joi.string()
+    firstname: joi.string(),
+    lastname: joi.string(),
+    username: joi.string(),
+    password_sha: joi.string(),
+    birthday: joi.string()
   },
   forClient(obj) {
     // Implement outgoing transformations here
-    obj = _.omit(obj, ['_id', '_rev', '_oldRev']);
+    obj = _.omit(obj, ['password_sha', '_rev', '_oldRev']);
     return obj;
   },
   fromClient(obj) {
