@@ -1,0 +1,16 @@
+{
+    "name": "Letstalk",
+    "version": "0.0.0",
+    "description": "Letstalk Backend",
+    "engines": {
+        "arangodb": "^3.0.0"
+    },
+    "author": "Mirko Krause",
+    "license": "none",
+    "main": "main.js",
+    "scripts": {
+        "setup": "scripts/setup.js",
+        "teardown": "scripts/teardown.js"
+    },
+    "tests": "test/**/*.js"
+}
