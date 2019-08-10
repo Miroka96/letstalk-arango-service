@@ -16,9 +16,15 @@ rm -f service.zip
 
 cd service
 zip -r ../service.zip *
+cd ..
 
 echo "Login at http://localhost:8529 as root with password initial1"
 echo "As database choose _SYSTEM"
 echo "Import the created service.zip as service into the database (SERVICES -> Add -> Upload -> drop ZIP -> Install -> mountpoint = /dev)"
 echo "Enable Development mode for the service 'dev' (SERVICES -> dev -> Settings -> 'Set Development')"
-echo "finally run 'sudo chmod -R 777 apps/dev'"
+echo "Done?"
+echo "Press ENTER"
+sudo rm -r apps/dev
+git clone $(git remote get-url origin) apps/dev
+sudo chmod -R 777 apps/dev
+echo "Now point your IDE to $(pwd)/apps/dev/APP/"
