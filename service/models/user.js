@@ -1,28 +1,76 @@
 'use strict';
 const _ = require('lodash');
 const joi = require('joi');
+const auth = require('../util/auth');
+
+const username = joi.string();
+const password = joi.string();
+
+const firstname = joi.string();
+const lastname = joi.string();
+const birthday = joi.string();
+
+const login = {
+    username: username.required(),
+    password: password.required()
+};
+
+const signup = {
+    username: username.required(),
+    password: password.required(),
+    firstname: firstname.required(),
+    lastname: lastname.required(),
+    birthday: birthday.required()
+};
+
+const view = {
+    _key: joi.string().required(),
+    firstname: firstname.required(),
+    lastname: lastname.required(),
+    username: username.required(),
+    birthday: birthday.required()
+};
+
+const patch = {
+    username: username.optional(),
+    password: password.optional(),
+    firstname: firstname.optional(),
+    lastname: lastname.optional(),
+    birthday: birthday.optional()
+}
+
+function forClient(data) {
+    // Implement outgoing transformations here
+    return _.pick(data, ['_key', 'username', 'firstname', 'lastname', 'birthday']);
+}
+
+function fromClientPlain(data) {
+    // Implement incoming transformations here
+    return data;
+}
+
+function fromClientEncrypted(data) {
+    // Implement incoming transformations here
+    let obj = _.omit(fromClientPlain(data), ['password']);
+    if (data.password) {
+        obj.authData = auth.create(data.password);
+    }
+    return obj;
+}
+
+function wrap(schema) {
+    return _.assign({}, {forClient: forClient, fromClient: fromClientEncrypted}, {schema: schema});
+}
+
+function wrapPlain(schema) {
+    return _.assign({}, {forClient: forClient, fromClient: fromClientPlain()}, {schema: schema});
+}
 
 module.exports = {
-  schema: {
-    // Describe the attributes with joi here
-    _key: joi.string(),
-    firstname: joi.string().required(),
-    lastname: joi.string().required(),
-    username: joi.string().required(),
-    password: joi.string().required(),
-    birthday: joi.string().required(),
-    facts: joi.array().items(joi.number().required()),
-    topics: joi.array().items(joi.number().required()),
-    locations: joi.array().items(joi.number().required()),
-    pictures: joi.array().items(joi.number().required())
-  },
-  forClient(obj) {
-    // Implement outgoing transformations here
-    obj = _.omit(obj, ['password', '_rev', '_oldRev', '_id']);
-    return obj;
-  },
-  fromClient(obj) {
-    // Implement incoming transformations here
-    return obj;
-  }
+    Login: wrapPlain(login),
+    Signup: wrap(signup),
+    View: wrap(view),
+    ViewArray: wrap([view]),
+    Update: wrap(signup),
+    Patch: wrap(patch)
 };

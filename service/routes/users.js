@@ -27,7 +27,7 @@ router.tag('user');
 router.get(function (req, res) {
   res.send(users.all());
 }, 'list')
-.response([User], 'A list of users.')
+    .response([User.ViewArray], 'A list of users.')
 .summary('List all users')
 .description(dd`
   Retrieves a list of all users.
@@ -52,8 +52,8 @@ router.post(function (req, res) {
   ));
   res.send(user);
 }, 'create')
-.body(User, 'The user to create.')
-.response(201, User, 'The created user.')
+    .body(User.Signup, 'The user to create.')
+    .response(201, User.View, 'The created user.')
 .error(HTTP_CONFLICT, 'The user already exists.')
 .summary('Create a new user')
 .description(dd`
@@ -76,7 +76,7 @@ router.get(':key', function (req, res) {
   res.send(user);
 }, 'detail')
 .pathParam('key', keySchema)
-.response(User, 'The user.')
+    .response(User.View, 'The user.')
 .summary('Fetch a user')
 .description(dd`
   Retrieves a user by its key.
@@ -102,8 +102,8 @@ router.put(':key', function (req, res) {
   res.send(user);
 }, 'replace')
 .pathParam('key', keySchema)
-.body(User, 'The data to replace the user with.')
-.response(User, 'The new user.')
+    .body(User.Update, 'The data to replace the user with.')
+    .response(User.View, 'The new user.')
 .summary('Replace a user')
 .description(dd`
   Replaces an existing user with the request body and
@@ -125,13 +125,16 @@ router.patch(':key', function (req, res) {
     if (e.isArangoError && e.errorNum === ARANGO_CONFLICT) {
       throw httpError(HTTP_CONFLICT, e.message);
     }
+    if (e.isArangoError && e.errorNum === ARANGO_DUPLICATE) {
+      throw httpError(HTTP_CONFLICT, e.message);
+    }
     throw e;
   }
   res.send(user);
 }, 'update')
 .pathParam('key', keySchema)
-.body(joi.object().description('The data to update the user with.'))
-.response(User, 'The updated user.')
+    .body(User.Patch, 'The data to update the user with.')
+    .response(User.View, 'The updated user.')
 .summary('Update a user')
 .description(dd`
   Patches a user with the request body and
@@ -149,9 +152,10 @@ router.delete(':key', function (req, res) {
     }
     throw e;
   }
+  res.send({success: true});
 }, 'delete')
 .pathParam('key', keySchema)
-.response(null)
+    .response(joi.object({success: true}), 'A success message - only true possible')
 .summary('Remove a user')
 .description(dd`
   Deletes a user from the database.

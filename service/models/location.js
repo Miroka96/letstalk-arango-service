@@ -7,12 +7,7 @@ module.exports = {
     // Describe the attributes with joi here
     _key: joi.number(),
     name: joi.string().required(),
-    location: joi.string(),
-    owners: joi.array(joi.number()).required(),
-    questions: joi.array(joi.number()).required(),
-    answers: joi.array(joi.number()).required(),
-    members: joi.array(joi.number()).required(),
-    pictures: joi.array(joi.number()).required()
+      location: joi.string()
   },
   forClient(obj) {
     // Implement outgoing transformations here
@@ -22,7 +17,6 @@ module.exports = {
   fromClient(obj) {
     // Implement incoming transformations here
     obj = _.omit(obj, ['_key']);
-    _.merge(obj, {owners:[], questions:[], answers:[], members:[], pictures:[]});
     return obj;
   }
 };

@@ -1,9 +1,12 @@
 'use strict';
 const joi = require('joi');
+const _ = require('lodash');
 const createRouter = require('@arangodb/foxx/router');
 const auth = require('../util/auth');
 
 const users = module.context.collection('users');
+
+const User = require('../models/user');
 
 const router = createRouter();
 module.exports = router;
@@ -20,20 +23,17 @@ router.post('/login', function (req, res) {
     if (!valid) res.throw('unauthorized');
     req.session.uid = user._key;
     req.sessionStorage.save(req.session);
-    res.send({success:true});
+    res.send({success: true});
 })
-    .body(joi.object({
-        username: joi.string().required(),
-        password: joi.string().required()
-    }).required(), 'Credentials')
+    .body(User.Login, 'Credentials')
+    .response(joi.object({success: true}), 'A success message - only true possible')
     .description('Logs a registered user in using the given credentials and places a session cookie.');
-
 
 
 router.post('/signup', function (req, res) {
     const user = {};
     try {
-        user.authData = auth.create(req.body.password);
+        user.authData = req.body.authData;
         user.username = req.body.username;
         user.perms = [];
         const meta = users.save(user);
@@ -47,10 +47,7 @@ router.post('/signup', function (req, res) {
     req.sessionStorage.save(req.session);
     res.send({success: true});
 })
-    .body(joi.object({
-        username: joi.string().required(),
-        password: joi.string().required()
-    }).required(), 'Credentials')
+    .body(User.Signup, 'Complete User Information')
     .description('Creates a new user and logs them in.');
 
 
