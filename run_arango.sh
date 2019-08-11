@@ -5,7 +5,9 @@ docker run \
 -e ARANGO_ROOT_PASSWORD=initial1 \
 --name arangodb \
 -d \
---rm \
 -v arangodb_data:/var/lib/arangodb3 \
--v $(pwd)/apps:/var/lib/arangodb3-apps/_db/_system/ \
+-v "$(pwd)/service:/var/lib/arangodb3-apps/_db/_system/letstalk/APP" \
 arangodb
+echo "http://root:initial1@localhost:8529 DB=_SYSTEM"
+
+echo "Put ArangoDb service 'dev' into development mode (Login -> Services -> dev -> Settings -> 'Set Development'"
