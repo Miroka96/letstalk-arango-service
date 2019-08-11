@@ -11,6 +11,11 @@ const users = module.context.collection('users');
 const keySchema = joi.string().required()
 .description('The key of the user');
 
+const restrict = require('../util/restrict');
+const P = require('../util/permissions');
+const hasPerm = require('../util/hasPerm');
+const perms = module.context.collection('hasPermission');
+
 const ARANGO_NOT_FOUND = errors.ERROR_ARANGO_DOCUMENT_NOT_FOUND.code;
 const ARANGO_DUPLICATE = errors.ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED.code;
 const ARANGO_CONFLICT = errors.ERROR_ARANGO_CONFLICT.code;
@@ -24,7 +29,7 @@ module.exports = router;
 router.tag('user');
 
 
-router.get(function (req, res) {
+router.get(restrict(P.view_users), function (req, res) {
   res.send(users.all());
 }, 'list')
     .response([User.ViewArray], 'A list of users.')
@@ -34,7 +39,7 @@ router.get(function (req, res) {
 `);
 
 
-router.post(function (req, res) {
+router.post(restrict(P.add_user), function (req, res) {
   const user = req.body;
   let meta;
   try {
@@ -64,7 +69,9 @@ router.post(function (req, res) {
 
 router.get(':key', function (req, res) {
   const key = req.pathParams.key;
-  let user
+    const id = `${users.name()}/${key}`;
+    if (!hasPerm(req.user, P.view_user, id)) res.throw(403, 'Not authorized');
+    let user;
   try {
     user = users.document(key);
   } catch (e) {
@@ -85,6 +92,8 @@ router.get(':key', function (req, res) {
 
 router.put(':key', function (req, res) {
   const key = req.pathParams.key;
+    const id = `${users.name()}/${key}`;
+    if (!hasPerm(req.user, P.change_user, id)) res.throw(403, 'Not authorized');
   const user = req.body;
   let meta;
   try {
@@ -113,6 +122,8 @@ router.put(':key', function (req, res) {
 
 router.patch(':key', function (req, res) {
   const key = req.pathParams.key;
+    const id = `${users.name()}/${key}`;
+    if (!hasPerm(req.user, P.change_user, id)) res.throw(403, 'Not authorized');
   const patchData = req.body;
   let user;
   try {
@@ -144,6 +155,11 @@ router.patch(':key', function (req, res) {
 
 router.delete(':key', function (req, res) {
   const key = req.pathParams.key;
+    const id = `${users.name()}/${key}`;
+    if (!hasPerm(req.user, P.delete_user, id)) res.throw(403, 'Not authorized');
+    for (const perm of perms.inEdges(id)) {
+        perms.remove(perm);
+    }
   try {
     users.remove(key);
   } catch (e) {
