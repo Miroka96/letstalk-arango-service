@@ -8,6 +8,8 @@ const users = module.context.collection('users');
 
 const User = require('../models/user');
 
+const createUser = require('../util/createUser');
+
 const router = createRouter();
 module.exports = router;
 
@@ -31,18 +33,7 @@ router.post('/login', function (req, res) {
 
 
 router.post('/signup', function (req, res) {
-    const user = {};
-    try {
-        user.authData = req.body.authData;
-        user.username = req.body.username;
-        user.perms = [];
-        const meta = users.save(user);
-        Object.assign(user, meta);
-    } catch (e) {
-        // Failed to save the user
-        // We'll assume the uniqueness constraint has been violated
-        res.throw('bad request', 'Username already taken', e);
-    }
+    let user = createUser(req);
     req.session.uid = user._key;
     req.sessionStorage.save(req.session);
     res.send({success: true});

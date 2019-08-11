@@ -7,6 +7,8 @@ const errors = require('@arangodb').errors;
 const createRouter = require('@arangodb/foxx/router');
 const User = require('../models/user');
 
+const createUser = require('../util/createUser');
+
 const users = module.context.collection('users');
 const keySchema = joi.string().required()
 .description('The key of the user');
@@ -40,17 +42,7 @@ router.get(restrict(P.view_users), function (req, res) {
 
 
 router.post(restrict(P.add_user), function (req, res) {
-  const user = req.body;
-  let meta;
-  try {
-    meta = users.save(user);
-  } catch (e) {
-    if (e.isArangoError && e.errorNum === ARANGO_DUPLICATE) {
-      throw httpError(HTTP_CONFLICT, e.message);
-    }
-    throw e;
-  }
-  Object.assign(user, meta);
+    let user = createUser(req);
   res.status(201);
   res.set('location', req.makeAbsolute(
     req.reverse('detail', {key: user._key})

@@ -8,7 +8,7 @@ const password = joi.string();
 
 const firstname = joi.string();
 const lastname = joi.string();
-const birthday = joi.string();
+const birthday = joi.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
 const login = {
     username: username.required(),
