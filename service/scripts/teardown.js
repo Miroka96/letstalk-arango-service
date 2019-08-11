@@ -4,10 +4,19 @@ const collections = [
   "users",
   "facts",
   "topics",
-  "pictures",
   "locations",
   "questions",
-  "answers"
+  "pictures",
+  "answers",
+  "sessions",
+  "hasFact",
+  "likesTopic",
+  "joined",
+  "hasQuestion",
+  "hasPicture",
+  "hasAnswer",
+  "answered",
+  "hasPermission"
 ];
 
 for (const localName of collections) {
