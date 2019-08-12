@@ -10,5 +10,7 @@ module.exports = {
     lastname: joi.string(),
     birthday: joi.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     category: joi.string(),
-    fact: joi.string()
+    fact: joi.string(),
+    topic: joi.string(),
+    interestlevel: joi.number()
 };

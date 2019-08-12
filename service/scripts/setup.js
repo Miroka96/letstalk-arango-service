@@ -12,7 +12,7 @@ const documentCollections = [
 ];
 const edgeCollections = [
   "hasFact",
-  "likesTopic",
+  "hasTopic",
   "joined",
   "hasQuestion",
   "hasPicture",

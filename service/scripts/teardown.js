@@ -10,7 +10,7 @@ const collections = [
   "answers",
   "sessions",
   "hasFact",
-  "likesTopic",
+  "hasTopic",
   "joined",
   "hasQuestion",
   "hasPicture",
