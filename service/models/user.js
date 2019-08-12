@@ -2,41 +2,35 @@
 const _ = require('lodash');
 const joi = require('joi');
 const auth = require('../util/auth');
-
-const username = joi.string();
-const password = joi.string();
-
-const firstname = joi.string();
-const lastname = joi.string();
-const birthday = joi.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const p = require('../util/patterns');
 
 const login = {
-    username: username.required(),
-    password: password.required()
+    username: p.username.required(),
+    password: p.password.required()
 };
 
 const signup = {
-    username: username.required(),
-    password: password.required(),
-    firstname: firstname.required(),
-    lastname: lastname.required(),
-    birthday: birthday.required()
+    username: p.username.required(),
+    password: p.password.required(),
+    firstname: p.firstname.required(),
+    lastname: p.lastname.required(),
+    birthday: p.birthday.required()
 };
 
 const view = {
-    _key: joi.string().required(),
-    firstname: firstname.required(),
-    lastname: lastname.required(),
-    username: username.required(),
-    birthday: birthday.required()
+    _key: p._key.required(),
+    firstname: p.firstname.required(),
+    lastname: p.lastname.required(),
+    username: p.username.required(),
+    birthday: p.birthday.required()
 };
 
 const patch = {
-    username: username.optional(),
-    password: password.optional(),
-    firstname: firstname.optional(),
-    lastname: lastname.optional(),
-    birthday: birthday.optional()
+    username: p.username.optional(),
+    password: p.password.optional(),
+    firstname: p.firstname.optional(),
+    lastname: p.lastname.optional(),
+    birthday: p.birthday.optional()
 }
 
 function forClient(data) {
@@ -59,11 +53,11 @@ function fromClientEncrypted(data) {
 }
 
 function wrap(schema) {
-    return _.assign({}, {forClient: forClient, fromClient: fromClientEncrypted}, {schema: schema});
+    return _.assign({forClient: forClient, fromClient: fromClientEncrypted}, {schema: schema});
 }
 
 function wrapPlain(schema) {
-    return _.assign({}, {forClient: forClient, fromClient: fromClientPlain()}, {schema: schema});
+    return _.assign({forClient: forClient, fromClient: fromClientPlain()}, {schema: schema});
 }
 
 module.exports = {

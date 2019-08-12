@@ -2,8 +2,7 @@
 
 const users = module.context.collection('users');
 
-const P = require('../util/permissions');
-const perms = module.context.collection('hasPermission');
+const p = require('./perm');
 
 const httpError = require('http-errors');
 const status = require('statuses');
@@ -13,7 +12,12 @@ const ARANGO_DUPLICATE = errors.ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED.code;
 
 module.exports = function (req) {
     const user = req.body;
-    user.perms = [P.view_user];
+    user.perms = [
+        p.p.view_user,
+        p.p.add_location,
+        p.p.view_locations,
+        p.p.join_location
+    ];
     let meta;
     try {
         meta = users.save(user);
@@ -24,7 +28,14 @@ module.exports = function (req) {
         throw e;
     }
     Object.assign(user, meta);
-    perms.save({_from: user._id, _to: user._id, name: P.change_user});
-    perms.save({_from: user._id, _to: user._id, name: P.delete_user});
+
+    p.grant(user, user, [
+        p.p.view_user,
+        p.p.change_user,
+        p.p.delete_user,
+        p.p.add_fact,
+        p.p.add_topic,
+        p.p.add_picture
+    ]);
     return user;
 };
