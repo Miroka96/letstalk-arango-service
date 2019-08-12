@@ -1,5 +1,7 @@
 'use strict';
 
+const _ = require('lodash');
+
 const db = require('@arangodb').db;
 const aql = require('@arangodb').aql;
 
@@ -94,10 +96,10 @@ function restrict(name) {
 }
 
 function grant(user, object, operations) {
-    const userId = ('_in' in user) ? user._in : user;
-    const objectId = ('_in' in object) ? object._in : object;
+    const userId = (_.isObjectLike(user) && '_id' in user) ? user._id : user;
+    const objectId = (_.isObjectLike(object) && '_id' in object) ? object._id : object;
 
-    if (!Array.isArray(operation)) {
+    if (!Array.isArray(operations)) {
         operations = [operations];
     }
     for (const operation of operations) {
@@ -106,7 +108,7 @@ function grant(user, object, operations) {
 }
 
 function deleteAll(object) {
-    const objectId = ('_in' in object) ? object._in : object;
+    const objectId = (_.isObjectLike(object) && '_id' in object) ? object._id : object;
     for (const perm of perms.inEdges(objectId)) {
         perms.remove(perm);
     }

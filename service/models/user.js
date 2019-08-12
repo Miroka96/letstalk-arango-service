@@ -25,13 +25,18 @@ const view = {
     birthday: p.birthday.required()
 };
 
+const identity = {
+    _key: p._key.required(),
+    username: p.username.required()
+};
+
 const patch = {
     username: p.username.optional(),
     password: p.password.optional(),
     firstname: p.firstname.optional(),
     lastname: p.lastname.optional(),
     birthday: p.birthday.optional()
-}
+};
 
 function forClient(data) {
     // Implement outgoing transformations here
@@ -64,6 +69,7 @@ module.exports = {
     Login: wrapPlain(login),
     Signup: wrap(signup),
     View: wrap(view),
+    Identity: wrap(identity),
     ViewArray: wrap([view]),
     Update: wrap(signup),
     Patch: wrap(patch)

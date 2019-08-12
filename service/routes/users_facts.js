@@ -13,6 +13,7 @@ module.exports = router;
 
 const db = require('@arangodb').db;
 const aql = require('@arangodb').aql;
+const users = module.context.collection('users');
 const Fact = require('../models/fact');
 const facts = module.context.collection('facts');
 const hasFact = module.context.collection('hasFact');
@@ -43,8 +44,7 @@ router
         try {
             meta = facts.save(fact);
             hasFact.save({_from: id, _to: meta._id});
-            perms.save({_from: id, _to: meta._id, name: p.p.change_fact});
-            perms.save({_from: id, _to: meta._id, name: p.p.delete_fact});
+            p.grant(id, meta, [p.p.change_fact, p.p.delete_fact]);
         } catch (e) {
             throw e;
         }
