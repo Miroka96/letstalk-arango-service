@@ -23,6 +23,7 @@ router
     .get(':key/facts', function (req, res) {
         const key = req.pathParams.key;
         const userId = `${users.name()}/${key}`;
+        if (!p.has(req.user, p.p.add_question, id)) res.throw(403, 'Not authorized');
         const userFacts = db._query(aql`FOR fact IN OUTBOUND ${userId} ${hasFact} RETURN fact`);
         res.send(userFacts);
     }, 'list')

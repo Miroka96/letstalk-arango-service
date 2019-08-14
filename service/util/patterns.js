@@ -12,5 +12,10 @@ module.exports = {
     category: joi.string(),
     fact: joi.string(),
     topic: joi.string(),
-    interestlevel: joi.number()
+    interestlevel: joi.number(),
+    locationname: joi.string(),
+    location: joi.string(),
+    question: joi.string(),
+    questionoptions: joi.array(joi.string()),
+    answer: joi.string()
 };

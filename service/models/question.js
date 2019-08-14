@@ -1,22 +1,42 @@
 'use strict';
 const _ = require('lodash');
 const joi = require('joi');
+const p = require('../util/patterns');
+
+const write = {
+  question: p.question.required(),
+  options: p.questionoptions.required()
+};
+
+const view = {
+  _key: p._key.required(),
+  question: p.question.required(),
+  options: p.questionoptions.required()
+};
+
+const patch = {
+  question: p.question.optional(),
+  options: p.questionoptions.optional()
+};
+
+function forClient(obj) {
+  // Implement outgoing transformations here
+  obj = _.pick(obj, ['_key', 'question', 'questionoptions']);
+  return obj;
+}
+
+function fromClient(obj) {
+  // Implement incoming transformations here
+  obj = _.pick(obj, ['question', 'questionoptions']);
+  return obj;
+}
+
+function wrap(schema) {
+  return _.assign({forClient: forClient, fromClient: fromClient}, {schema: schema});
+}
 
 module.exports = {
-  schema: {
-    // Describe the attributes with joi here
-    _key: joi.string(),
-    question: joi.string().required(),
-    options: joi.array(joi.string().required()),
-    location: joi.number().required()
-  },
-  forClient(obj) {
-    // Implement outgoing transformations here
-    obj = _.omit(obj, ['_id', '_rev', '_oldRev']);
-    return obj;
-  },
-  fromClient(obj) {
-    // Implement incoming transformations here
-    return obj;
-  }
+  View: wrap(view),
+  Write: wrap(write),
+  Patch: wrap(patch)
 };

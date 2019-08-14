@@ -27,24 +27,26 @@ module.exports = router;
 router.tag('user');
 
 
-router.get(p.restrict(p.p.view_users), function (req, res) {
-    res.send(users.all());
-}, 'list')
-    .response([User.ViewArray], 'A list of users.')
+router
+    .get(p.restrict(p.p.view_users), function (req, res) {
+        res.send(users.all());
+    }, 'list')
+    .response(User.ViewArray, 'A list of users.')
     .summary('List all users')
     .description(dd`
   Retrieves a list of all users.
 `);
 
 
-router.post(p.restrict(p.p.add_user), function (req, res) {
-    let user = createUser(req);
-    res.status(201);
-    res.set('location', req.makeAbsolute(
-        req.reverse('detail', {key: user._key})
-    ));
-    res.send(user);
-}, 'create')
+router
+    .post(p.restrict(p.p.add_user), function (req, res) {
+        let user = createUser(req);
+        res.status(201);
+        res.set('location', req.makeAbsolute(
+            req.reverse('detail', {key: user._key})
+        ));
+        res.send(user);
+    }, 'create')
     .body(User.Signup, 'The user to create.')
     .response(201, User.View, 'The created user.')
     .error(HTTP_CONFLICT, 'The user already exists.')
@@ -55,21 +57,22 @@ router.post(p.restrict(p.p.add_user), function (req, res) {
 `);
 
 
-router.get(':key', function (req, res) {
-    const key = req.pathParams.key;
-    const id = `${users.name()}/${key}`;
-    if (!p.has(req.user, p.p.view_user, id)) res.throw(403, 'Not authorized');
-    let user;
-    try {
-        user = users.document(key);
-    } catch (e) {
-        if (e.isArangoError && e.errorNum === ARANGO_NOT_FOUND) {
-            throw httpError(HTTP_NOT_FOUND, e.message);
+router
+    .get(':key', function (req, res) {
+        const key = req.pathParams.key;
+        const id = `${users.name()}/${key}`;
+        if (!p.has(req.user, p.p.view_user, id)) res.throw(403, 'Not authorized');
+        let user;
+        try {
+            user = users.document(key);
+        } catch (e) {
+            if (e.isArangoError && e.errorNum === ARANGO_NOT_FOUND) {
+                throw httpError(HTTP_NOT_FOUND, e.message);
+            }
+            throw e;
         }
-        throw e;
-    }
-    res.send(user);
-}, 'detail')
+        res.send(user);
+    }, 'detail')
     .pathParam('key', keySchema)
     .response(User.View, 'The user.')
     .summary('Fetch a user')
@@ -78,26 +81,27 @@ router.get(':key', function (req, res) {
 `);
 
 
-router.put(':key', function (req, res) {
-    const key = req.pathParams.key;
-    const id = `${users.name()}/${key}`;
-    if (!p.has(req.user, p.p.change_user, id)) res.throw(403, 'Not authorized');
-    const user = req.body;
-    let meta;
-    try {
-        meta = users.replace(key, user);
-    } catch (e) {
-        if (e.isArangoError && e.errorNum === ARANGO_NOT_FOUND) {
-            throw httpError(HTTP_NOT_FOUND, e.message);
+router
+    .put(':key', function (req, res) {
+        const key = req.pathParams.key;
+        const id = `${users.name()}/${key}`;
+        if (!p.has(req.user, p.p.change_user, id)) res.throw(403, 'Not authorized');
+        const user = req.body;
+        let meta;
+        try {
+            meta = users.replace(key, user);
+        } catch (e) {
+            if (e.isArangoError && e.errorNum === ARANGO_NOT_FOUND) {
+                throw httpError(HTTP_NOT_FOUND, e.message);
+            }
+            if (e.isArangoError && e.errorNum === ARANGO_CONFLICT) {
+                throw httpError(HTTP_CONFLICT, e.message);
+            }
+            throw e;
         }
-        if (e.isArangoError && e.errorNum === ARANGO_CONFLICT) {
-            throw httpError(HTTP_CONFLICT, e.message);
-        }
-        throw e;
-    }
-    Object.assign(user, meta);
-    res.send(user);
-}, 'replace')
+        Object.assign(user, meta);
+        res.send(user);
+    }, 'replace')
     .pathParam('key', keySchema)
     .body(User.Update, 'The data to replace the user with.')
     .response(User.View, 'The new user.')
@@ -108,29 +112,30 @@ router.put(':key', function (req, res) {
 `);
 
 
-router.patch(':key', function (req, res) {
-    const key = req.pathParams.key;
-    const id = `${users.name()}/${key}`;
-    if (!p.has(req.user, p.p.change_user, id)) res.throw(403, 'Not authorized');
-    const patchData = req.body;
-    let user;
-    try {
-        users.update(key, patchData);
-        user = users.document(key);
-    } catch (e) {
-        if (e.isArangoError && e.errorNum === ARANGO_NOT_FOUND) {
-            throw httpError(HTTP_NOT_FOUND, e.message);
+router
+    .patch(':key', function (req, res) {
+        const key = req.pathParams.key;
+        const id = `${users.name()}/${key}`;
+        if (!p.has(req.user, p.p.change_user, id)) res.throw(403, 'Not authorized');
+        const patchData = req.body;
+        let user;
+        try {
+            users.update(key, patchData);
+            user = users.document(key);
+        } catch (e) {
+            if (e.isArangoError && e.errorNum === ARANGO_NOT_FOUND) {
+                throw httpError(HTTP_NOT_FOUND, e.message);
+            }
+            if (e.isArangoError && e.errorNum === ARANGO_CONFLICT) {
+                throw httpError(HTTP_CONFLICT, e.message);
+            }
+            if (e.isArangoError && e.errorNum === ARANGO_DUPLICATE) {
+                throw httpError(HTTP_CONFLICT, e.message);
+            }
+            throw e;
         }
-        if (e.isArangoError && e.errorNum === ARANGO_CONFLICT) {
-            throw httpError(HTTP_CONFLICT, e.message);
-        }
-        if (e.isArangoError && e.errorNum === ARANGO_DUPLICATE) {
-            throw httpError(HTTP_CONFLICT, e.message);
-        }
-        throw e;
-    }
-    res.send(user);
-}, 'update')
+        res.send(user);
+    }, 'update')
     .pathParam('key', keySchema)
     .body(User.Patch, 'The data to update the user with.')
     .response(User.View, 'The updated user.')
@@ -141,23 +146,24 @@ router.patch(':key', function (req, res) {
 `);
 
 
-router.delete(':key', function (req, res) {
-    const key = req.pathParams.key;
-    const id = `${users.name()}/${key}`;
-    if (!p.has(req.user, p.p.delete_user, id)) res.throw(403, 'Not authorized');
-    try {
-        users.remove(key);
-        for (const perm of perms.inEdges(id)) {
-            perms.remove(perm);
+router
+    .delete(':key', function (req, res) {
+        const key = req.pathParams.key;
+        const id = `${users.name()}/${key}`;
+        if (!p.has(req.user, p.p.delete_user, id)) res.throw(403, 'Not authorized');
+        try {
+            users.remove(key);
+            for (const perm of perms.inEdges(id)) {
+                perms.remove(perm);
+            }
+        } catch (e) {
+            if (e.isArangoError && e.errorNum === ARANGO_NOT_FOUND) {
+                throw httpError(HTTP_NOT_FOUND, e.message);
+            }
+            throw e;
         }
-    } catch (e) {
-        if (e.isArangoError && e.errorNum === ARANGO_NOT_FOUND) {
-            throw httpError(HTTP_NOT_FOUND, e.message);
-        }
-        throw e;
-    }
-    res.send({success: true});
-}, 'delete')
+        res.send({success: true});
+    }, 'delete')
     .pathParam('key', keySchema)
     .response(joi.object({success: true}), 'A success message - only true possible')
     .summary('Remove a user')

@@ -1,22 +1,39 @@
 'use strict';
 const _ = require('lodash');
 const joi = require('joi');
+const p = require('../util/patterns');
+
+const write = {
+    answer: p.answer.required()
+};
+
+const view = {
+    _key: p._key.required(),
+    answer: p.answer.required()
+};
+
+const patch = {
+    answer: p.answer.optional()
+};
+
+function forClient(obj) {
+    // Implement outgoing transformations here
+    obj = _.pick(obj, ['_key', 'answer']);
+    return obj;
+}
+
+function fromClient(obj) {
+    // Implement incoming transformations here
+    obj = _.pick(obj, ['answer']);
+    return obj;
+}
+
+function wrap(schema) {
+    return _.assign({forClient: forClient, fromClient: fromClient}, {schema: schema});
+}
 
 module.exports = {
-  schema: {
-    // Describe the attributes with joi here
-    _key: joi.string(),
-    question_key: joi.number().required(),
-    user_key: joi.number().required(),
-    answer: joi.string().required()
-  },
-  forClient(obj) {
-    // Implement outgoing transformations here
-    obj = _.omit(obj, ['_id', '_rev', '_oldRev']);
-    return obj;
-  },
-  fromClient(obj) {
-    // Implement incoming transformations here
-    return obj;
-  }
+    View: wrap(view),
+    Write: wrap(write),
+    Patch: wrap(patch)
 };
