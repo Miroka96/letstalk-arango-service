@@ -9,7 +9,7 @@ const Fact = require('../models/fact');
 
 const facts = module.context.collection('facts');
 const hasFact = module.context.collection('hasFact');
-const keySchema = joi.string().required()
+const keySchema = require('../util/patterns')._key.required()
     .description('The key of the fact');
 
 const p = require('../util/perm');

@@ -9,7 +9,7 @@ const Topic = require('../models/topic');
 
 const topics = module.context.collection('topics');
 const hasTopic = module.context.collection('hasTopic');
-const keySchema = joi.string().required()
+const keySchema = require('../util/patterns')._key.required()
     .description('The key of the topic');
 
 const p = require('../util/perm');
