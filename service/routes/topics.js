@@ -129,10 +129,10 @@ router
         if (!p.has(req.user, p.p.delete_topic, topicId)) res.throw(403, 'Not authorized');
         try {
             topics.remove(key);
-            for (const has of hasTopic.inEdges(id)) {
+            for (const has of hasTopic.inEdges(topicId)) {
                 hasTopic.remove(has);
             }
-            p.deleteAll(id)
+            p.deleteAll(topicId)
         } catch (e) {
             if (e.isArangoError && e.errorNum === ARANGO_NOT_FOUND) {
                 throw httpError(HTTP_NOT_FOUND, e.message);
