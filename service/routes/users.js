@@ -174,4 +174,4 @@ router
 
 router.use(require('./users_facts'));
 router.use(require('./users_topics'));
-
+router.use(require('./_pictures').users);

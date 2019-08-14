@@ -17,5 +17,6 @@ module.exports = {
     location: joi.string(),
     question: joi.string(),
     questionoptions: joi.array(joi.string()),
-    answer: joi.string()
+    answer: joi.string(),
+    data: joi.string() //base64
 };
