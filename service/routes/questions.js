@@ -148,3 +148,5 @@ router
     .description(dd`
   Deletes a question from the database.
 `);
+
+router.use(require('./questions_answers'));

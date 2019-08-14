@@ -15,6 +15,7 @@ const permissions = {
     delete_answer: 'delete_answer',
 
     view_facts: 'view_facts',
+    view_user_facts: 'view_user_facts',
     add_fact: 'add_fact',
     view_fact: 'view_fact',
     change_fact: 'change_fact',
@@ -40,6 +41,7 @@ const permissions = {
     delete_question: 'delete_question',
 
     view_topics: 'view_topics',
+    view_user_topics: 'view_user_topics',
     add_topic: 'add_topic',
     view_topic: 'view_topic',
     change_topic: 'change_topic',

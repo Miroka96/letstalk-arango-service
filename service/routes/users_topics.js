@@ -22,6 +22,7 @@ router
     .get(':key/topics', function (req, res) {
         const key = req.pathParams.key;
         const userId = `${users.name()}/${key}`;
+        if (!p.has(req.user, p.p.view_user_topics, userId)) res.throw(403, 'Not authorized');
         const userTopics = db._query(aql`FOR topic IN OUTBOUND ${userId} ${hasTopic} RETURN topic`);
         res.send(userTopics);
     }, 'list')
