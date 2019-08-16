@@ -169,3 +169,4 @@ router.delete(':key', function (req, res) {
 
 router.use(require('./locations_questions'));
 router.use(require('./_pictures').locations);
+router.use(require('./locations_memberships'));

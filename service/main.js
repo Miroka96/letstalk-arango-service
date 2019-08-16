@@ -8,6 +8,7 @@ module.context.use('/questions', require('./routes/questions'), 'questions');
 module.context.use('/pictures', require('./routes/pictures'), 'pictures');
 module.context.use('/answers', require('./routes/answers'), 'answers');
 module.context.use('/auth', require('./routes/auth'), 'authentication');
+module.context.use('/memberships', require('./routes/memberships'), 'memberships');
 
 // provide session handling for all routes
 const sessionsMiddleware = require('@arangodb/foxx/sessions');

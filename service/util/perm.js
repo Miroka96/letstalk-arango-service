@@ -22,11 +22,14 @@ const permissions = {
     delete_fact: 'delete_fact',
 
     view_locations: 'view_locations',
-    join_location: 'join_location',
     add_location: 'add_location',
     view_location: 'view_location',
     change_location: 'change_location',
     delete_location: 'delete_location',
+
+    add_membership: 'add_membership',
+    delete_membership: 'delete_membership',
+    view_memberships: 'view_memberships',
 
     view_pictures: 'view_pictures',
     add_picture: 'add_picture',
@@ -111,7 +114,7 @@ function grant(user, object, operations) {
 
 function deleteAll(object) {
     const objectId = (_.isObjectLike(object) && '_id' in object) ? object._id : object;
-    for (const perm of perms.inEdges(objectId)) {
+    for (const perm of perms.edges(objectId)) {
         perms.remove(perm);
     }
 }

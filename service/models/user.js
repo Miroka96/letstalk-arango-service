@@ -70,7 +70,6 @@ module.exports = {
     Signup: wrap(signup),
     View: wrap(view),
     Identity: wrap(identity),
-    ViewArray: wrap([view]),
     Update: wrap(signup),
     Patch: wrap(patch)
 };

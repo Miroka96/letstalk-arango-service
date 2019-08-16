@@ -31,7 +31,7 @@ router
     .get(p.restrict(p.p.view_users), function (req, res) {
         res.send(users.all());
     }, 'list')
-    .response(User.ViewArray, 'A list of users.')
+    .response([User.View], 'A list of users.')
     .summary('List all users')
     .description(dd`
   Retrieves a list of all users.
@@ -153,9 +153,7 @@ router
         if (!p.has(req.user, p.p.delete_user, id)) res.throw(403, 'Not authorized');
         try {
             users.remove(key);
-            for (const perm of perms.inEdges(id)) {
-                perms.remove(perm);
-            }
+            p.deleteAll(id);
         } catch (e) {
             if (e.isArangoError && e.errorNum === ARANGO_NOT_FOUND) {
                 throw httpError(HTTP_NOT_FOUND, e.message);
