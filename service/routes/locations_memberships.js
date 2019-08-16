@@ -37,6 +37,9 @@ router
 
 router
     .post(':key/memberships', function (req, res) {
+        if (!req.user) {
+            res.throw(401, 'Unauthorized');
+        }
         const key = req.pathParams.key;
         const locationId = `${locations.name()}/${key}`;
         const addingUserId = req.user._id;
@@ -45,7 +48,7 @@ router
         if (!userToAdd) userToAdd = req.user._key;
         const userId = `${users.name()}/${userToAdd}`;
 
-        if (!p.has(addingUserId, p.p.join_location, locationId)) res.throw(403, 'Not authorized');
+        if (!p.has(addingUserId, p.p.add_membership, locationId)) res.throw(403, 'Not authorized');
         let meta;
         try {
             meta = memberOf.save({_from: userId, _to: locationId});
