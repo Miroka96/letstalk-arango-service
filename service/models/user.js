@@ -27,7 +27,8 @@ const view = {
 
 const identity = {
     _key: p._key.required(),
-    username: p.username.required()
+    username: p.username.required(),
+    sessionid: p.sessionid.required()
 };
 
 const patch = {
@@ -40,7 +41,7 @@ const patch = {
 
 function forClient(data) {
     // Implement outgoing transformations here
-    return _.pick(data, ['_key', 'username', 'firstname', 'lastname', 'birthday']);
+    return _.pick(data, ['_key', 'sessionid', 'username', 'firstname', 'lastname', 'birthday']);
 }
 
 function fromClientPlain(data) {

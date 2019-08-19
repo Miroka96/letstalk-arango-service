@@ -26,7 +26,7 @@ router
         if (!valid) res.throw('unauthorized');
         req.session.uid = user._key;
         req.sessionStorage.save(req.session);
-        res.send({username: user.username, _key: user._key});
+        res.send({username: user.username, _key: user._key, sessionid: req.session._key});
     })
     .body(User.Login, 'Credentials')
     .response(User.Identity, 'Identifying information')
@@ -38,7 +38,7 @@ router
         let user = createUser(req);
         req.session.uid = user._key;
         req.sessionStorage.save(req.session);
-        res.send({_key: user._key, username: user.username});
+        res.send({_key: user._key, username: user.username, sessionid: req.session._key});
     })
     .body(User.Signup, 'Complete User Information')
     .response(User.Identity, 'Identifying information')
@@ -49,9 +49,9 @@ router
     .get('/whoami', function (req, res) {
         try {
             const user = users.document(req.session.uid);
-            res.send({username: user.username, _key: user._key});
+            res.send({username: user.username, _key: user._key, sessionid: req.session._key});
         } catch (e) {
-            res.send({username: null, _key: null});
+            res.send({username: null, _key: null, sessionid: null});
         }
     })
     .response(User.Identity, 'Identifying information')

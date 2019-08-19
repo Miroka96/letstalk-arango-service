@@ -4,6 +4,7 @@ const joi = require('joi');
 
 module.exports = {
     _key: joi.string(),
+    sessionid: joi.string(),
     username: joi.string(),
     password: joi.string(),
     firstname: joi.string(),

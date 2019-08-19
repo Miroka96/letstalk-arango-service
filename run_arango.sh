@@ -8,6 +8,6 @@ docker run \
 -v arangodb_data:/var/lib/arangodb3 \
 -v "$(pwd)/service:/var/lib/arangodb3-apps/_db/_system/letstalk/APP" \
 arangodb
-echo "http://root:initial1@localhost:8529 DB=_SYSTEM"
+echo "http://localhost:8529 with root:initial1 and DB=_SYSTEM"
 
-echo "Put ArangoDb service 'dev' into development mode (Login -> Services -> dev -> Settings -> 'Set Development'"
+echo "Put ArangoDb service 'letstalk' into development mode (Login -> Services -> letstalk -> Settings -> 'Set Development'"

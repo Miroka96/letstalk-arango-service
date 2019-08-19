@@ -1,6 +1,7 @@
 "use strict";
 const dd = require('dedent');
 const joi = require('joi');
+const _ = require('lodash');
 
 const keySchema = require('../util/patterns')._key.required().description('The key of the location');
 
@@ -40,22 +41,26 @@ router
         if (!req.user) {
             res.throw(401, 'Unauthorized');
         }
+        const addingUserId = req.user._id;
+
         const locationKey = req.pathParams.key;
         const locationId = `${locations.name()}/${locationKey}`;
-        const addingUserId = req.user._id;
+
         let userKey = req.body.user_key;
         if (!userKey) userKey = req.user._key;
         const userId = `${users.name()}/${userKey}`;
 
         if (!p.has(addingUserId, p.p.add_membership, locationId)) res.throw(403, 'Not authorized');
+            const membership = {_from: userId, _to: locationId, user_key: userKey, location_key: locationKey};
         let meta;
         try {
-            meta = memberOf.save({_from: userId, _to: locationId, user_key: userKey, location_key: locationKey});
+            meta = memberOf.save(membership);
         } catch (e) {
             throw e;
         }
+        _.assign(membership, meta);
         res.status(201);
-        res.send(meta);
+        res.send(membership);
     }, 'join')
     .pathParam('key', keySchema)
     .body(Membership.WriteOn, 'The membership to create.')
