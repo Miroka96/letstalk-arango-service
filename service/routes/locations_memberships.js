@@ -40,18 +40,17 @@ router
         if (!req.user) {
             res.throw(401, 'Unauthorized');
         }
-        const key = req.pathParams.key;
-        const locationId = `${locations.name()}/${key}`;
+        const locationKey = req.pathParams.key;
+        const locationId = `${locations.name()}/${locationKey}`;
         const addingUserId = req.user._id;
-        let userToAdd;
-        userToAdd = req.body.user_key;
-        if (!userToAdd) userToAdd = req.user._key;
-        const userId = `${users.name()}/${userToAdd}`;
+        let userKey = req.body.user_key;
+        if (!userKey) userKey = req.user._key;
+        const userId = `${users.name()}/${userKey}`;
 
         if (!p.has(addingUserId, p.p.add_membership, locationId)) res.throw(403, 'Not authorized');
         let meta;
         try {
-            meta = memberOf.save({_from: userId, _to: locationId});
+            meta = memberOf.save({_from: userId, _to: locationId, user_key: userKey, location_key: locationKey});
         } catch (e) {
             throw e;
         }
